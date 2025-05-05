@@ -1,0 +1,297 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "UNREAD"
+          ],
+          "q": "",
+          "readStatus": "unread",
+          "sender": "chaudhari.anu19"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dcfc5b21-1cf6-4b8c-a941-bf19c20d7df1",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GYw4rZMEVueX8xIF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "18665826-f27e-4fe4-a335-fd75e7fcfcc6",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Evaluate this resume for a Data Scientist role based on these criteria:\nFirst, the candidate must have at least 3 years of work experience in data science or a related role.\nSecond, their skills should include machine learning, Python, SQL, and other data science-related skills.\nThird, they should have worked on data science-related projects during those 3 years, using the relevant skills.\nFinally, they need to have a Bachelor's, Master's, or PhD in a relevant field like Computer Science or Data Science.\n\nAssign a score out of 2.5 for each criterion and provide a total score out of 10.\n\nProvide me output in the following format:\n\nCandidate's Name: Provide name of the candidate\n\nCandidate's Email Id: Provide email id of the candidate\n\nRelevant work experience: Provide score out of 2.5\n\nSkills: Provide score out of 2.5\n\nRelevant Projects: Provide score out of 2.5\n\nEducation: Provide score out of 2.5\n\nTotal Score: Sum score of above 4 criteria and provide score out of 10\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        440,
+        0
+      ],
+      "id": "f8c3e963-9700-47cc-acb1-fd5148297d23",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        468,
+        220
+      ],
+      "id": "3e7c550b-db9d-4b9e-963a-d26c25282d19",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YO324UPD3st7lJ3b",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ELxsue9OUqEstAR8qGNnvYpf4H5KWuo4_EfeIJQ7wXE",
+          "mode": "list",
+          "cachedResultName": "Resumes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ELxsue9OUqEstAR8qGNnvYpf4H5KWuo4_EfeIJQ7wXE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ELxsue9OUqEstAR8qGNnvYpf4H5KWuo4_EfeIJQ7wXE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate name": "={{ $json.output['Candidate Name'] }}",
+            "Candidate Email ID": "={{ $json.output['Candidate Email Id'] }}",
+            "Relevant Work Experience": "={{ $json.output['Relevant Work Experience'] }}",
+            "Skills": "={{ $json.output.Skills }}",
+            "Education": "={{ $json.output.Education }}",
+            "Relevant Projects": "={{ $json.output['Relevant Projects'] }}",
+            "Total Score": "={{ $json.output['Total Score'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate name",
+              "displayName": "Candidate name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Candidate Email ID",
+              "displayName": "Candidate Email ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevant Work Experience",
+              "displayName": "Relevant Work Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Skills",
+              "displayName": "Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevant Projects",
+              "displayName": "Relevant Projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Education",
+              "displayName": "Education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Score",
+              "displayName": "Total Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        816,
+        0
+      ],
+      "id": "9bdee441-7091-4937-a50b-79346cf4a796",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cVGYWFCEWd6lpejY",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"Candidate Name\": {\n      \"type\": \"string\"\n    },\n    \"Candidate Email Id\": {\n      \"type\": \"string\",\n      \"format\": \"email\"\n    },\n    \"Relevant Work Experience\": {\n      \"type\": \"string\"\n    },\n    \"Skills\": {\n      \"type\": \"string\"\n    },\n    \"Relevant Projects\": {\n      \"type\": \"string\"\n    },\n    \"Education\": {\n      \"type\": \"string\"\n    },\n    \"Total Score\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"Candidate Name\",\n    \"Candidate Email Id\",\n    \"Relevant Work Experience\",\n    \"Skills\",\n    \"Relevant Projects\",\n    \"Education\",\n    \"Total Score\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        588,
+        220
+      ],
+      "id": "bef540f2-d14f-4680-a91f-9dcf2f5ef093",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "baf81324-aee2-4743-99ee-2e96968ddfb6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54daa582f3433590dc2a22a872dc72521b6861aadee725f131cb740da862238d"
+  },
+  "id": "4duGxMQayDaABVjN",
+  "tags": []
+}
